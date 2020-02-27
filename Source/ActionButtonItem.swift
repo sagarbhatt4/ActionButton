@@ -26,13 +26,13 @@ import UIKit
 
 public typealias ActionButtonItemAction = (ActionButtonItem) -> Void
 
-open class ActionButtonItem: NSObject {
+public class ActionButtonItem: NSObject {
     
     /// The action the item should perform when tapped
-    open var action: ActionButtonItemAction?
+    public var action: ActionButtonItemAction?
     
     /// Description of the item's action
-    open var text: String {
+    public var text: String {
         get {
             return self.label.text!
         }
@@ -45,22 +45,22 @@ open class ActionButtonItem: NSObject {
     internal var view: UIView!
     
     /// Label that contain the item's *text*
-    fileprivate var label: UILabel!
+    private var label: UILabel!
     
     /// Main button that will perform the defined action
-    fileprivate var button: UIButton!
+    private var button: UIButton!
     
     /// Image used by the button
-    fileprivate var image: UIImage!
+    private var image: UIImage!
     
     /// Size needed for the *view* property presente the item's content
-    fileprivate let viewSize = CGSize(width: 200, height: 35)
+    private let viewSize = CGSize(width: 200, height: 35)
     
     /// Button's size by default the button is 35x35
-    fileprivate let buttonSize = CGSize(width: 35, height: 35)
+    private let buttonSize = CGSize(width: 35, height: 35)
     
-    fileprivate var labelBackground: UIView!
-    fileprivate let backgroundInset = CGSize(width: 10, height: 10)
+    private var labelBackground: UIView!
+    private let backgroundInset = CGSize(width: 10, height: 10)
     
     /**
         :param: title Title that will be presented when the item is active
@@ -80,19 +80,21 @@ open class ActionButtonItem: NSObject {
         self.button.layer.shadowRadius = 2
         self.button.layer.shadowOffset = CGSize(width: 1, height: 1)
         self.button.layer.shadowColor = UIColor.gray.cgColor
-        self.button.addTarget(self, action: #selector(ActionButtonItem.buttonPressed(_:)), for: .touchUpInside)
+        self.button.addTarget(self, action: Selector(("buttonPressed:")), for: .touchUpInside)
 
         if let unwrappedImage = image {
-            self.button.setImage(unwrappedImage, for: UIControlState())
+            self.button.setImage(unwrappedImage, for: .normal)
         }
+        
+        if let text = optionalTitle, text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).uppercased().isEmpty == false {
                 
-        if let text = optionalTitle , text.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty == false {
+//        if let text = optionalTitle, text.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).isEmpty == false {
             self.label = UILabel()
             self.label.font = UIFont(name: "HelveticaNeue-Medium", size: 13)
             self.label.textColor = UIColor.darkGray
             self.label.textAlignment = .right
             self.label.text = text
-            self.label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(ActionButtonItem.labelTapped(_:))))
+            self.label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: Selector(("labelTapped:"))))
             self.label.sizeToFit()
             
             self.labelBackground = UIView()
@@ -116,7 +118,7 @@ open class ActionButtonItem: NSObject {
             self.labelBackground.addSubview(self.label)
             
             // Add Tap Gestures Recognizer
-            let tap = UITapGestureRecognizer(target: self, action: #selector(ActionButtonItem.labelTapped(_:)))
+            let tap = UITapGestureRecognizer(target: self, action: Selector(("labelTapped:")))
             self.view.addGestureRecognizer(tap)
             
             self.view.addSubview(self.labelBackground)
@@ -126,14 +128,14 @@ open class ActionButtonItem: NSObject {
     }
         
     //MARK: - Button Action Methods
-    func buttonPressed(_ sender: UIButton) {
+    func buttonPressed(sender: UIButton) {
         if let unwrappedAction = self.action {
             unwrappedAction(self)
         }
     }
     
     //MARK: - Gesture Recognizer Methods
-    func labelTapped(_ gesture: UIGestureRecognizer) {
+    func labelTapped(gesture: UIGestureRecognizer) {
         if let unwrappedAction = self.action {
             unwrappedAction(self)
         }
